@@ -1,0 +1,2 @@
+# Epithelial-folding-at-Segment-Boundaries
+Here is the repository for the manuscript titled "Pinching and pushing:  fold formation at the Drosophila segment boundary". Here, we are simulating the fold formation at the T1-T2 segment boundaries that occurs during late stages of Drosophila embryogenesis. Here, we simulate a cross-section of T1-T2 segment using Surface Evolver. Here, the force file that move the cells was adapted from  https://github.com/BanerjeeLab/AAVM
