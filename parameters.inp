@@ -1,0 +1,26 @@
+// Simulation implementation parameters adapted from https://github.com/BanerjeeLab/AAVM
+length_scale := 15;				//  um
+time_scale := 1.8;				// Simulation time to real time, in s
+force_scale := 225;				// Simulation force to real force, in nN
+Fhorizontal:=-0.00000056                        // Force in horizontal direction on each vertex of T2 segment
+
+
+
+// Simulation implementation parameters adapted from https://github.com/BanerjeeLab/AAVM
+
+viscosity := 2700;				// Viscosity, nN s / um
+dt := 1.8;					// Individual timestep, s
+
+
+// Adapted from https://github.com/BanerjeeLab/AAVM
+
+
+img_output_interval := 100;		// Output interval for image collection
+record_interval := 100;			// Number of time steps to output statistics
+output_name := "Fold_formation";		// Name  of simulation output
+
+simulation_step := 0; 			// Initialize simulation step counter
+
+
+
+

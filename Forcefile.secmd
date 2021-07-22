@@ -1,0 +1,196 @@
+
+
+
+/*The following function  was adapted from https://github.com/BanerjeeLab/AAVM*/
+
+get_cell_centers :=
+{
+	foreach facet ff  do
+	{
+		local cx, cy;
+
+		cx := 0;
+		cy := 0;
+
+		//Weight by the length of the edges connected to the vertex
+		foreach ff.edge ee do
+		{
+			cx += ee.length * (ee.vertex[1].x + ee.vertex[2].x) * 0.5;
+			cy += ee.length * (ee.vertex[1].y + ee.vertex[2].y) * 0.5;
+		};
+
+		 ff.center_x := cx/sum(ff.edge, length);
+		 ff.center_y := cy/sum(ff.edge, length);
+	};
+}
+/*The following function  was adapted from https://github.com/BanerjeeLab/AAVM*/
+/* Record cell centers */
+record_cell_centers :=
+{
+	recname := sprintf "D:\\Surface_Evolver_Codes\\Example codes\\Fold_formation\\Constraints\\images\\cell_center_%s.csv", output_name;
+	foreach facet ff do
+	{
+		local cx, cy;
+
+		cx := 0;
+		cy := 0;
+
+		//Weight by the length of the edges connected to the vertex
+		foreach ff.edge ee do
+		{
+			cx += ee.length * (ee.vertex[1].x + ee.vertex[2].x) * 0.5;
+			cy += ee.length * (ee.vertex[1].y + ee.vertex[2].y) * 0.5;
+		};
+
+		cx := cx/sum(ff.edge, length);
+		cy := cy/sum(ff.edge, length);
+
+		printf "%f, %f,", cx, cy >> recname;
+	};
+	//New line
+	printf "\n" >> recname;
+}
+
+/*The following function  was adapted from https://github.com/BanerjeeLab/AAVM*/
+get_shape_forces := 
+{ 
+  g;
+  foreach vertex vv  do 
+    {                  
+      vv.fx_shape := vv.v_force[1];
+      vv.fy_shape := vv.v_force[2];
+    } 
+};
+/*The following function  was adapted from https://github.com/BanerjeeLab/AAVM*/
+relax_one :=
+{
+	get_shape_forces;
+        
+       
+	foreach vertex vv where !fixed  do
+	{
+		vv.vel_x:= vv.fx_shape;
+		vv.vel_y:= vv.fy_shape;
+		vv.x += dt * vv.vel_x / (viscosity / force_scale  * length_scale);
+		vv.y += dt * vv.vel_y / (viscosity / force_scale  * length_scale);
+	};
+       
+
+}
+
+
+
+
+/*The following function  moves the vertices in horizontal direction by applying horizontal forces*/
+move_two :=
+{
+	get_cell_centers;
+
+	if recording AND simulation_step % img_output_interval == 0 then
+	{
+		imgname := sprintf "D:\\Surface_Evolver_Codes\\Example codes\\Fold_formation\\Constraints\\images\\%s_%06d.ps", output_name, simulation_step;
+		postscript imgname;
+	};
+
+
+	if recording AND simulation_step % record_interval == 0 then
+	{
+		record_cell_centers;
+		
+	};
+
+	get_shape_forces;
+        
+        // apply tangential forces which moves the vertices in horizontal direction
+        
+
+	foreach vertex vv where id>12  do
+	{
+		
+		vv.x += dt * Fhorizontal*(viscosity / force_scale  * length_scale)
+		
+	};
+     
+
+	
+	simulation_step+=1;
+}
+
+ move_three:=
+{
+	get_cell_centers;
+
+	if recording AND simulation_step % img_output_interval == 0 then
+	{
+		imgname := sprintf "D:\\Surface_Evolver_Codes\\Example codes\\Fold_formation\\Constraints\\images\\%s_%06d.ps", output_name, simulation_step;
+		postscript imgname;
+	};
+
+
+	if recording AND simulation_step % record_interval == 0 then
+	{
+		record_cell_centers;
+		
+	};
+
+	get_shape_forces;
+
+	foreach facet ff where id>10 do
+	{
+	   foreach ff.vertex vv do
+	{
+
+		vv.x += dt *-0.0001
+		
+	};
+
+	};
+	simulation_step+=1;
+}
+
+get_edge_center:=
+
+{
+	foreach edge ee  do
+	{
+		local cx, cy;
+
+		//Weight by the length of the edges connected to the vertex
+		
+	        cx := ee.length * (ee.vertex[1].x + ee.vertex[2].x) * 0.5;
+	        cy := ee.length * (ee.vertex[1].y + ee.vertex[2].y) * 0.5;
+		
+
+		ee.center_x1 := cx;
+		ee.center_y1 := cy;
+	};
+   
+}
+
+/* The following function repels the edges my setting a minimum distance*/  
+repel:=
+
+{     
+      local cx,cy;
+      local minDist;
+      minDist:=0.1;
+      get_edge_center;
+      foreach edge ee where ee.id%3=1 and ee.id>30 do
+	 { 
+            foreach edge ss where ss.id!=ee.id do
+                 {
+                    if sqrt((ee.center_x1 - ss.center_x1)^2 + (ee.center_y1 - ss.center_y1)^2) < minDist then 
+                        {
+                             foreach ee.vertex vv where !fixed do
+                                 {
+                                  vv.x += dt *0.00003;
+                                  vv.y += dt *0.0001;
+     		                  
+                                 
+                                 };
+                        };
+                   };
+          };
+   
+}
+
