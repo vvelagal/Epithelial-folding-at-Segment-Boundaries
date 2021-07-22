@@ -20,7 +20,8 @@ Here is the repository for the manuscript titled "Pinching and pushing:  fold fo
   
    Parameters | Value
 ------------ | -------------
-Lenght scale | Content from cell 2
-Force scale | Content in the second column
-Viscosity   | 
+Lenght scale | 15 micron
+Force scale |  225 nN
+Viscosity   | 2700
+Hooke modulus| 1
  
